@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../generated/prisma';
 import { hashPassword, verifyPassword } from '../utils/hash';
 import { signJwt } from '../utils/jwt';
 
