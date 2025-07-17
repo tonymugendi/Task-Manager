@@ -12,6 +12,8 @@ const fastify = Fastify({
 fastify.register(authRoutes, { prefix: '/auth' });
 fastify.register(boardRoutes, { prefix: '/boards' });
 fastify.register(listRoutes, { prefix: '/boards' });
+fastify.register(require('./routes/task.routes').default, { prefix: '/boards' });
+fastify.register(require('./routes/comment.routes').default, { prefix: '/boards' });
 
 fastify.listen({ port: 3004 }, (err, addr) => {
     if (err) {

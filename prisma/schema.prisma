@@ -47,20 +47,20 @@ model List {
   updatedAt DateTime @updatedAt
 }
 
-
 model Task {
-  id        Int      @id @default(autoincrement())
-  title     String
+  id          Int      @id @default(autoincrement())
+  title       String
   description String?
-  dueDate   DateTime?
-  priority  Int?
-  list      List     @relation(fields: [listId], references: [id])
-  listId    Int
-  assignee  User?    @relation("TaskAssignee", fields: [assigneeId], references: [id])
-  assigneeId Int?
-  comments  Comment[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  status      String    @default("todo")
+  dueDate     DateTime?
+  position    Int
+  list        List      @relation(fields: [listId], references: [id])
+  listId      Int
+  assignee    User?     @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  assigneeId  Int?      
+  comments    Comment[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 
