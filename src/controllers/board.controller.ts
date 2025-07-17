@@ -21,7 +21,8 @@ export async function createBoard(request: FastifyRequest, reply: FastifyReply) 
     });
     return reply.status(201).send(board);
   } catch (error) {
-    return reply.status(500).send({ message: 'Failed to create board', error: error.message });
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return reply.status(500).send({ message: 'Failed to create board', error: errorMessage });
   }
 }
 
@@ -36,7 +37,8 @@ export async function getBoards(request: FastifyRequest, reply: FastifyReply) {
     });
     return reply.send(boards);
   } catch (error) {
-    return reply.status(500).send({ message: 'Failed to fetch boards', error: error.message });
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return reply.status(500).send({ message: 'Failed to fetch boards', error: errorMessage });
   }
 }
 
@@ -57,7 +59,8 @@ export async function getBoard(request: FastifyRequest, reply: FastifyReply) {
     }
     return reply.send(board);
   } catch (error) {
-    return reply.status(500).send({ message: 'Failed to fetch board', error: error.message });
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return reply.status(500).send({ message: 'Failed to fetch board', error: errorMessage });
   }
 }
 
@@ -85,7 +88,8 @@ export async function updateBoard(request: FastifyRequest, reply: FastifyReply) 
     });
     return reply.send(updated);
   } catch (error) {
-    return reply.status(500).send({ message: 'Failed to update board', error: error.message });
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return reply.status(500).send({ message: 'Failed to update board', error: errorMessage });
   }
 }
 
@@ -111,6 +115,7 @@ export async function deleteBoard(request: FastifyRequest, reply: FastifyReply) 
     });
     return reply.send({ message: 'Board deleted' });
   } catch (error) {
-    return reply.status(500).send({ message: 'Failed to delete board', error: error.message });
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return reply.status(500).send({ message: 'Failed to delete board', error: errorMessage });
   }
 }
