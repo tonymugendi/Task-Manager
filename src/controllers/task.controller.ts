@@ -1,17 +1,20 @@
 import { PrismaClient } from '../generated/prisma';
 import { FastifyRequest, FastifyReply } from 'fastify';
-
+import { createTaskSchema } from '../schemas/task.schema';
 const prisma = new PrismaClient();
 
 // Create a new task within a list
 export async function createTask(request: FastifyRequest, reply: FastifyReply) {
   const user = (request as any).user;
   const { boardId, listId } = request.params as { boardId: string; listId: string };
-  const { title, description, status, dueDate, position } = request.body as { title: string; description?: string; status?: string; dueDate?: string; position: number };
 
-  if (!title || typeof position !== 'number') {
-    return reply.status(400).send({ message: 'Task title and position are required' });
+  const validateTask = createTaskSchema.safeParse(request.body);
+
+  if (!validateTask.success) {
+    return reply.status(400).send({ message: validateTask.error.message });
   }
+
+  const { title, description, status, dueDate, position } = validateTask.data;
 
   // Ensure the user owns the board
   const board = await prisma.board.findFirst({
