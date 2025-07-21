@@ -1,4 +1,4 @@
-import { PrismaClient } from '../generated/prisma';
+import { PrismaClient } from '@prisma/client';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { createTaskSchema } from '../schemas/task.schema';
 const prisma = new PrismaClient();

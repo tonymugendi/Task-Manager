@@ -5,8 +5,11 @@ if (!JWT_SECRET) {
   throw new Error('JWT_SECRET environment variable is not set.');
 }
 
-export function signJwt(payload: object, expiresIn: string | number = '7d') {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn });
+export function signJwt(
+  payload: Record<string, any>,
+  expiresIn: string | number = '7d'
+) {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn } as any);
 }
 
 export function verifyJwt<T = any>(token: string): T | null {
