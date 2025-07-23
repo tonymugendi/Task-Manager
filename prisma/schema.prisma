@@ -63,7 +63,6 @@ model Task {
   id          Int       @id @default(autoincrement())
   title       String
   description String?
-  status      String    @default("todo")
   dueDate     DateTime?
   position    Int
   list        List      @relation(fields: [listId], references: [id])

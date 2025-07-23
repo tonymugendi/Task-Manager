@@ -13,13 +13,41 @@ export async function createBoard(request: FastifyRequest, reply: FastifyReply) 
   }
 
   try {
+    // Create the board
     const board = await prisma.board.create({
       data: {
         name,
         ownerId: parseInt(user.userId, 10),
       },
     });
-    return reply.status(201).send(board);
+
+    // Create default lists for the new board
+    const defaultLists = [
+      { name: 'To Do', position: 0 },
+      { name: 'In Progress', position: 1 },
+      { name: 'Review', position: 2 },
+      { name: 'Done', position: 3 }
+    ];
+
+    await prisma.list.createMany({
+      data: defaultLists.map(list => ({
+        name: list.name,
+        position: list.position,
+        boardId: board.id,
+      })),
+    });
+
+    // Return the board with its lists
+    const boardWithLists = await prisma.board.findUnique({
+      where: { id: board.id },
+      include: {
+        lists: {
+          orderBy: { position: 'asc' }
+        }
+      }
+    });
+
+    return reply.status(201).send(boardWithLists);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     return reply.status(500).send({ message: 'Failed to create board', error: errorMessage });
@@ -53,6 +81,16 @@ export async function getBoard(request: FastifyRequest, reply: FastifyReply) {
         id: parseInt(id, 10),
         ownerId: parseInt(user.userId, 10),
       },
+      include: {
+        lists: {
+          orderBy: { position: 'asc' },
+          include: {
+            tasks: {
+              orderBy: { position: 'asc' }
+            }
+          }
+        }
+      }
     });
     if (!board) {
       return reply.status(404).send({ message: 'Board not found' });

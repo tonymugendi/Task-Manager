@@ -14,7 +14,7 @@ export async function createTask(request: FastifyRequest, reply: FastifyReply) {
     return reply.status(400).send({ message: validateTask.error.message });
   }
 
-  const { title, description, status, dueDate, position } = validateTask.data;
+  const { title, description, dueDate } = validateTask.data;
 
   // Ensure the user owns the board
   const board = await prisma.board.findFirst({
@@ -39,13 +39,19 @@ export async function createTask(request: FastifyRequest, reply: FastifyReply) {
   }
 
   try {
+    // Get the highest position in the list to append the new task
+    const lastTask = await prisma.task.findFirst({
+      where: { listId: list.id },
+      orderBy: { position: 'desc' },
+    });
+    const nextPosition = lastTask ? lastTask.position + 1 : 0;
+
     const task = await prisma.task.create({
       data: {
         title,
         description,
-        status,
         dueDate: dueDate ? new Date(dueDate) : undefined,
-        position,
+        position: nextPosition,
         listId: list.id,
       },
     });
@@ -143,7 +149,7 @@ export async function getTask(request: FastifyRequest, reply: FastifyReply) {
 export async function updateTask(request: FastifyRequest, reply: FastifyReply) {
   const user = (request as any).user;
   const { boardId, listId, taskId } = request.params as { boardId: string; listId: string; taskId: string };
-  const { title, description, status, dueDate, position } = request.body as { title?: string; description?: string; status?: string; dueDate?: string; position?: number };
+  const { title, description, dueDate, position } = request.body as { title?: string; description?: string; dueDate?: string; position?: number };
 
   // Ensure the user owns the board
   const board = await prisma.board.findFirst({
@@ -184,7 +190,6 @@ export async function updateTask(request: FastifyRequest, reply: FastifyReply) {
       data: {
         title: title ?? task.title,
         description: description ?? task.description,
-        status: status ?? task.status,
         dueDate: dueDate ? new Date(dueDate) : task.dueDate,
         position: typeof position === 'number' ? position : task.position,
       },
