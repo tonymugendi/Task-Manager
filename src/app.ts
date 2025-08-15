@@ -7,6 +7,7 @@ import listRoutes from './routes/list.routes';
 import taskRoutes from './routes/task.routes';
 import commentRoutes from './routes/comment.routes';
 import FastifyCors from '@fastify/cors';
+import { globalErrorHandler } from './middleware/error.middleware';
 
 const fastify = Fastify({
     logger: true
@@ -25,9 +26,8 @@ fastify.register(listRoutes, { prefix: '/boards' });
 fastify.register(taskRoutes, { prefix: '/boards' });
 fastify.register(commentRoutes, { prefix: '/boards' });
 
-fastify.setErrorHandler((error, request, reply) => {
-    reply.status(500).send({ message: error.message || 'Internal server error' });
-});
+// Set up global error handler
+fastify.setErrorHandler(globalErrorHandler);
 
 fastify.listen({ port: 3004, host: '0.0.0.0' }, (err, addr) => {
     if (err) {
