@@ -42,14 +42,15 @@ export const globalErrorHandler = (
   }
 
   // Prisma database errors
-  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+  if (error.code && typeof error.code === 'string') {
     let message = 'Database error occurred';
     let statusCode = 500;
 
     switch (error.code) {
       case 'P2002':
         // Unique constraint violation
-        const target = error.meta?.target as string[] || [];
+        const meta = (error as any).meta;
+        const target = meta?.target as string[] || [];
         message = `${target.join(', ')} already exists`;
         statusCode = 409;
         break;
@@ -81,7 +82,7 @@ export const globalErrorHandler = (
   }
 
   // Prisma validation errors
-  if (error instanceof Prisma.PrismaClientValidationError) {
+  if (error.name === 'PrismaClientValidationError') {
     const response: ErrorResponse = {
       error: 'Database Validation Error',
       message: 'Invalid data provided to database',
